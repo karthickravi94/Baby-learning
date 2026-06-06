@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kolam Drawing Guide – கோலம் கற்றுக்கொள்வோம்</title>
+<style>
+  :root {
+    --bg:       #09011c;
+    --bg2:      #130428;
+    --card:     rgba(255,255,255,0.04);
+    --border:   rgba(255,215,0,0.22);
+    --gold:     #FFD700;
+    --orange:   #FF8C00;
+    --red:      #E8365D;
+    --cream:    #FFF5DC;
+    --dim:      rgba(255,255,255,0.6);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: radial-gradient(ellipse at 50% 0%, #2a1060 0%, var(--bg) 65%);
+    min-height: 100vh;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--cream);
+    padding: 16px;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    text-align: center;
+    padding: 28px 0 18px;
+  }
+  .ornament { color: var(--gold); font-size: 1.4em; letter-spacing: 6px; opacity: .7; }
+  .title-ta {
+    font-size: clamp(1.6em, 5vw, 2.6em);
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 0 0 28px rgba(255,215,0,.45);
+    margin: 6px 0 2px;
+  }
+  .title-en {
+    font-size: clamp(.9em, 2.5vw, 1.15em);
+    color: var(--orange);
+    letter-spacing: 2px;
+  }
+  .subtitle {
+    margin-top: 6px;
+    font-size: .82em;
+    color: var(--dim);
+    font-style: italic;
+  }
+
+  /* ── Progress dots ── */
+  .progress-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 18px 0 4px;
+  }
+  .pdot {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    border: 1.5px solid rgba(255,215,0,.35);
+    cursor: pointer;
+    transition: all .28s ease;
+    padding: 0;
+  }
+  .pdot.active {
+    background: var(--gold);
+    box-shadow: 0 0 10px rgba(255,215,0,.8);
+    transform: scale(1.25);
+  }
+
+  /* ── Card ── */
+  .card {
+    max-width: 960px;
+    margin: 10px auto 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 30px 28px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.55),
+                inset 0 1px 0 rgba(255,255,255,.06);
+    transition: opacity .2s, transform .2s;
+  }
+  .card.fade-out { opacity: 0; transform: translateY(6px); }
+  .card.fade-in  { animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
+
+  /* ── Kolam Header ── */
+  .kolam-header { text-align: center; margin-bottom: 26px; }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--orange), var(--gold));
+    color: #09011c;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: .75em;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .kolam-name-ta {
+    font-size: clamp(1.1em, 3vw, 1.55em);
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,215,0,.3);
+    margin-bottom: 2px;
+  }
+  .kolam-name-en {
+    font-size: clamp(1.3em, 4vw, 2em);
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .kolam-desc {
+    color: var(--dim);
+    font-size: .93em;
+    line-height: 1.7;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ── Body grid ── */
+  .kolam-body {
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ── SVG canvas ── */
+  .canvas-wrap {
+    background: #050110;
+    border: 1px solid rgba(255,215,0,.12);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .canvas-wrap svg { width: 100%; height: auto; }
+  .canvas-label {
+    font-size: .72em;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,.3);
+    text-transform: uppercase;
+  }
+
+  /* ── Steps ── */
+  .steps-heading {
+    font-size: 1.15em;
+    color: var(--gold);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,215,0,.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .steps-list { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+  .step { display: flex; gap: 13px; align-items: flex-start; }
+  .step-num {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c0392b, var(--red));
+    display: flex; align-items: center; justify-content: center;
+    font-size: .82em; font-weight: bold; color: #fff;
+    box-shadow: 0 2px 8px rgba(232,54,93,.4);
+  }
+  .step-body { padding-top: 5px; }
+  .step-text { color: rgba(255,255,255,.85); font-size: .93em; line-height: 1.6; }
+  .step-tip {
+    color: var(--orange); font-size: .8em;
+    font-style: italic; margin-top: 4px;
+  }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,215,0,.14);
+    gap: 12px;
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 26px;
+    border-radius: 28px;
+    border: none;
+    font-size: .95em;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    letter-spacing: .8px;
+    transition: all .25s ease;
+    white-space: nowrap;
+  }
+  .btn-next {
+    background: linear-gradient(135deg, var(--orange), var(--gold));
+    color: #09011c;
+  }
+  .btn-next:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255,215,0,.38);
+  }
+  .btn-prev {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,215,0,.25);
+    color: var(--cream);
+  }
+  .btn-prev:hover:not(:disabled) {
+    background: rgba(255,255,255,.1);
+    transform: translateY(-2px);
+  }
+  .btn:disabled { opacity: .25; cursor: not-allowed; transform: none !important; }
+
+  .nav-center { text-align: center; }
+  .page-num { font-size: 1em; color: var(--gold); letter-spacing: 2px; display: block; }
+  .diff-row { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 5px; }
+  .diff-label { font-size: .7em; color: var(--dim); letter-spacing: 1px; }
+  .diff-pip {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    transition: all .3s;
+  }
+  .diff-pip.on { background: var(--orange); box-shadow: 0 0 6px rgba(255,140,0,.7); }
+
+  /* ── Footer ── */
+  .site-footer {
+    text-align: center;
+    margin-top: 28px;
+    padding-bottom: 20px;
+    color: rgba(255,255,255,.3);
+    font-size: .8em;
+    line-height: 1.8;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .kolam-body { grid-template-columns: 1fr; }
+    .canvas-wrap { max-width: 260px; margin: 0 auto; }
+    .card { padding: 18px 14px; }
+    .btn { padding: 10px 18px; font-size: .85em; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="ornament">✦ ❋ ✦</div>
+  <div class="title-ta">கோலம் வரைவோம்</div>
+  <div class="title-en">Learn to Draw Kolam</div>
+  <div class="subtitle">Step-by-step traditional South Indian floor art</div>
+  <div class="progress-row" id="progressRow"></div>
+</header>
+
+<div class="card" id="mainCard">
+  <div class="kolam-header" id="kolamHeader"></div>
+  <div class="kolam-body">
+    <div class="canvas-wrap">
+      <div id="kolamSvg"></div>
+      <div class="canvas-label">Complete Pattern</div>
+    </div>
+    <div>
+      <div class="steps-heading">✏️ How to Draw — Step by Step</div>
+      <ul class="steps-list" id="stepsList"></ul>
+    </div>
+  </div>
+  <div class="nav-bar">
+    <button class="btn btn-prev" id="prevBtn" onclick="navigate(-1)">← Previous</button>
+    <div class="nav-center">
+      <span class="page-num" id="pageNum"></span>
+      <div class="diff-row" id="diffRow"></div>
+    </div>
+    <button class="btn btn-next" id="nextBtn" onclick="navigate(1)">Next →</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div>🌸 கோலம் தமிழ் கலாச்சாரத்தின் ஒரு அழகான பகுதி 🌸</div>
+  <div>Kolam is a beautiful part of Tamil culture</div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════
+   Kolam data — 5 patterns, each with SVG + steps
+═══════════════════════════════════════════════ */
+const kolams = [
+
+  /* ── 1 · 4-Petal Lotus ── */
+  {
+    title: '4-Petal Lotus Kolam',
+    tamil: 'தாமரை கோலம்',
+    difficulty: 'Beginner',
+    description: 'The simplest and most beloved kolam. Four soft petals arranged in a cross around a glowing center — perfect as your very first kolam.',
+    svg: `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1a" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3a1a7a" stop-opacity=".6"/>
+      <stop offset="100%" stop-color="#050110" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="260" height="260" fill="#050110" rx="8"/>
+  <circle cx="130" cy="130" r="118" fill="url(#g1a)"/>
+
+  <!-- 4 petals: N S E W -->
+  <ellipse cx="130" cy="83" rx="23" ry="47"
+    fill="rgba(255,215,0,.13)" stroke="#FFD700" stroke-width="2"/>
+  <ellipse cx="130" cy="177" rx="23" ry="47"
+    fill="rgba(255,215,0,.13)" stroke="#FFD700" stroke-width="2"/>
+  <ellipse cx="83" cy="130" rx="47" ry="23"
+    fill="rgba(255,140,0,.13)" stroke="#FF8C00" stroke-width="2"/>
+  <ellipse cx="177" cy="130" rx="47" ry="23"
+    fill="rgba(255,140,0,.13)" stroke="#FF8C00" stroke-width="2"/>
+
+  <!-- diagonal petal hints -->
+  <ellipse cx="100" cy="100" rx="14" ry="28"
+    fill="rgba(220,54,93,.08)" stroke="rgba(220,54,93,.4)" stroke-width="1.2"
+    transform="rotate(-45,100,100)"/>
+  <ellipse cx="160" cy="100" rx="14" ry="28"
+    fill="rgba(220,54,93,.08)" stroke="rgba(220,54,93,.4)" stroke-width="1.2"
+    transform="rotate(45,160,100)"/>
+  <ellipse cx="100" cy="160" rx="14" ry="28"
+    fill="rgba(220,54,93,.08)" stroke="rgba(220,54,93,.4)" stroke-width="1.2"
+    transform="rotate(45,100,160)"/>
+  <ellipse cx="160" cy="160" rx="14" ry="28"
+    fill="rgba(220,54,93,.08)" stroke="rgba(220,54,93,.4)" stroke-width="1.2"
+    transform="rotate(-45,160,160)"/>
+
+  <!-- center -->
+  <circle cx="130" cy="130" r="32"
+    fill="rgba(232,54,93,.1)" stroke="#E8365D" stroke-width="1.8"/>
+  <circle cx="130" cy="130" r="17"
+    fill="rgba(255,215,0,.18)" stroke="#FFD700" stroke-width="1.5"/>
+  <circle cx="130" cy="130" r="7" fill="#FFD700"/>
+
+  <!-- tip dots -->
+  <circle cx="130" cy="36" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="130" cy="224" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="36"  cy="130" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="224" cy="130" r="4.5" fill="white" opacity=".85"/>
+
+  <!-- corner accent dots -->
+  <circle cx="88" cy="88" r="3.2" fill="#FF8C00" opacity=".75"/>
+  <circle cx="172" cy="88" r="3.2" fill="#FF8C00" opacity=".75"/>
+  <circle cx="88" cy="172" r="3.2" fill="#FF8C00" opacity=".75"/>
+  <circle cx="172" cy="172" r="3.2" fill="#FF8C00" opacity=".75"/>
+
+  <!-- outer ring -->
+  <circle cx="130" cy="130" r="110"
+    fill="none" stroke="rgba(255,215,0,.18)" stroke-width="1"
+    stroke-dasharray="4 8"/>
+</svg>`,
+    steps: [
+      { text: 'Place a single dot exactly in the centre of your drawing space. This is the anchor for the whole kolam.' ,
+        tip: 'Use rice flour or white chalk on a clean, flat surface.' },
+      { text: 'Draw a tall, thin oval (ellipse) pointing straight up from the centre dot — this is the North petal.' },
+      { text: 'Mirror it below the centre dot, pointing straight down — this is the South petal.' },
+      { text: 'Draw a wide, flat oval pointing to the left of the centre — the West petal.' },
+      { text: 'Draw the matching oval to the right — the East petal. You now have a four-petal cross shape.' },
+      { text: 'Draw a circle where all four petals meet. Add a small inner circle and a bright dot at the very centre. Finish with a small dot at the tip of each petal.',
+        tip: 'Add tiny orange dots in the four diagonal corners for extra decoration.' },
+    ],
+  },
+
+  /* ── 2 · 8-Pointed Star ── */
+  {
+    title: '8-Pointed Star Kolam',
+    tamil: 'அஷ்டகோண கோலம்',
+    difficulty: 'Beginner',
+    description: 'Eight rays burst outward from a single centre, forming a radiant star. It symbolises the eight directions and is one of the most auspicious kolam shapes.',
+    svg: `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g2a" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a0a40" stop-opacity=".8"/>
+      <stop offset="100%" stop-color="#050110" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="260" height="260" fill="#050110" rx="8"/>
+  <circle cx="130" cy="130" r="118" fill="url(#g2a)"/>
+
+  <!-- outer glow ring -->
+  <circle cx="130" cy="130" r="105"
+    fill="none" stroke="rgba(255,215,0,.1)" stroke-width="14"/>
+
+  <!-- 8-pointed star -->
+  <path d="M230,130 L171.6,112.8 L200.7,59.3 L147.2,88.4
+           L130,30   L112.8,88.4 L59.3,59.3   L88.4,112.8
+           L30,130   L88.4,147.2 L59.3,200.7  L112.8,171.6
+           L130,230  L147.2,171.6 L200.7,200.7 L171.6,147.2 Z"
+    fill="rgba(255,215,0,.11)" stroke="#FFD700" stroke-width="2"
+    stroke-linejoin="round"/>
+
+  <!-- inner octagon -->
+  <polygon
+    points="171.6,112.8 147.2,88.4 112.8,88.4 88.4,112.8
+            88.4,147.2 112.8,171.6 147.2,171.6 171.6,147.2"
+    fill="rgba(255,140,0,.12)" stroke="#FF8C00" stroke-width="1.8"/>
+
+  <!-- center -->
+  <circle cx="130" cy="130" r="30"
+    fill="rgba(232,54,93,.1)" stroke="#E8365D" stroke-width="1.8"/>
+  <circle cx="130" cy="130" r="9" fill="#FFD700"/>
+
+  <!-- cardinal tip dots -->
+  <circle cx="230" cy="130" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="130"  cy="30" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="30"  cy="130" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="130" cy="230" r="4.5" fill="white" opacity=".85"/>
+
+  <!-- diagonal tip dots -->
+  <circle cx="200.7" cy="59.3"  r="4"   fill="#FFD700" opacity=".85"/>
+  <circle cx="200.7" cy="200.7" r="4"   fill="#FFD700" opacity=".85"/>
+  <circle cx="59.3"  cy="59.3"  r="4"   fill="#FFD700" opacity=".85"/>
+  <circle cx="59.3"  cy="200.7" r="4"   fill="#FFD700" opacity=".85"/>
+
+  <!-- subtle axis lines -->
+  <line x1="130" y1="30"  x2="130" y2="230" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+  <line x1="30"  y1="130" x2="230" y2="130" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+  <line x1="59.3" y1="59.3" x2="200.7" y2="200.7" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+  <line x1="200.7" y1="59.3" x2="59.3" y2="200.7" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+</svg>`,
+    steps: [
+      { text: 'Mark the centre and draw a straight vertical line, equal length above and below.' },
+      { text: 'Cross it with a horizontal line of the same length — you now have a plus (+) sign with 4 tips.' },
+      { text: 'Draw a diagonal line from top-left to bottom-right through the centre, same length as before.' },
+      { text: 'Add a second diagonal from top-right to bottom-left. You now have 8 tips radiating from the centre.' },
+      { text: 'Connect the tips in a zigzag: draw a line from the end of one ray to the midpoint between the next two rays, then out to the next ray tip, and so on, all the way around.',
+        tip: 'Think of it as connecting every other tip with a smaller inner point between them.' },
+      { text: 'Draw a small circle in the centre and place a bright dot inside it. Add dots at each of the 8 outer star points to finish.' },
+    ],
+  },
+
+  /* ── 3 · 6-Petal Flower ── */
+  {
+    title: '6-Petal Flower Kolam',
+    tamil: 'ஆறு இதழ் கோலம்',
+    difficulty: 'Intermediate',
+    description: 'Six identical petals bloom at perfectly even 60° intervals. This flower kolam is a staple at festivals and celebrations, representing the six seasons of the Tamil calendar.',
+    svg: `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g3a" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1f0d55" stop-opacity=".7"/>
+      <stop offset="100%" stop-color="#050110" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="260" height="260" fill="#050110" rx="8"/>
+  <circle cx="130" cy="130" r="118" fill="url(#g3a)"/>
+
+  <!-- 6 petals alternating gold / orange / red -->
+  <ellipse cx="130" cy="76" rx="21" ry="52"
+    fill="rgba(255,215,0,.14)" stroke="#FFD700" stroke-width="1.8"
+    transform="rotate(0,130,130)"/>
+  <ellipse cx="130" cy="76" rx="21" ry="52"
+    fill="rgba(255,165,0,.14)" stroke="#FFA500" stroke-width="1.8"
+    transform="rotate(60,130,130)"/>
+  <ellipse cx="130" cy="76" rx="21" ry="52"
+    fill="rgba(232,54,93,.14)" stroke="#E8365D" stroke-width="1.8"
+    transform="rotate(120,130,130)"/>
+  <ellipse cx="130" cy="76" rx="21" ry="52"
+    fill="rgba(255,215,0,.14)" stroke="#FFD700" stroke-width="1.8"
+    transform="rotate(180,130,130)"/>
+  <ellipse cx="130" cy="76" rx="21" ry="52"
+    fill="rgba(255,165,0,.14)" stroke="#FFA500" stroke-width="1.8"
+    transform="rotate(240,130,130)"/>
+  <ellipse cx="130" cy="76" rx="21" ry="52"
+    fill="rgba(232,54,93,.14)" stroke="#E8365D" stroke-width="1.8"
+    transform="rotate(300,130,130)"/>
+
+  <!-- center rings -->
+  <circle cx="130" cy="130" r="36"
+    fill="rgba(255,215,0,.1)" stroke="#FFD700" stroke-width="1.8"/>
+  <circle cx="130" cy="130" r="18"
+    fill="rgba(255,140,0,.2)" stroke="#FF8C00" stroke-width="1.6"/>
+  <circle cx="130" cy="130" r="7" fill="#FFD700"/>
+
+  <!-- petal tip dots
+       Petal 0 (0°): tip at (130,24) — cy=76, ry=52, top=76-52=24
+       distance from centre (130,130) = 106
+       Petal k: (130+106·sin(k·60°), 130−106·cos(k·60°)) -->
+  <circle cx="130"   cy="24"   r="4.5" fill="white"   opacity=".85"/>
+  <circle cx="221.8" cy="77"   r="4.5" fill="white"   opacity=".85"/>
+  <circle cx="221.8" cy="183"  r="4.5" fill="white"   opacity=".85"/>
+  <circle cx="130"   cy="236"  r="4.5" fill="white"   opacity=".85"/>
+  <circle cx="38.2"  cy="183"  r="4.5" fill="white"   opacity=".85"/>
+  <circle cx="38.2"  cy="77"   r="4.5" fill="white"   opacity=".85"/>
+
+  <!-- decorative outer ring -->
+  <circle cx="130" cy="130" r="112"
+    fill="none" stroke="rgba(255,215,0,.15)" stroke-width="1"
+    stroke-dasharray="5 9"/>
+</svg>`,
+    steps: [
+      { text: 'Mark the centre and draw a faint circle around it — this acts as a guide so all petals are the same size.' },
+      { text: 'Draw the first petal: a tall, narrow oval pointing straight upward from the centre.' },
+      { text: 'Turn 60° clockwise and draw the second identical petal — it points upper-right.' },
+      { text: 'Continue turning 60° each time, adding petals: lower-right, straight down, lower-left, upper-left. Six petals total.' ,
+        tip: 'Imagine a clock — petals at 12, 2, 4, 6, 8 and 10 o\'clock.' },
+      { text: 'Draw a circle where all petals overlap at the centre to create the flower\'s "eye".' },
+      { text: 'Add a smaller inner circle, a bright dot in the middle, and a small dot at the tip of each petal. Optionally colour alternate petals in different warm shades.' },
+    ],
+  },
+
+  /* ── 4 · Nested Diamonds ── */
+  {
+    title: 'Diamond Kolam',
+    tamil: 'வைர கோலம்',
+    difficulty: 'Intermediate',
+    description: 'Three diamonds nested inside each other, each rotated 45°, create an elegant geometric pattern. Diamonds in kolam represent prosperity and symmetry in all directions.',
+    svg: `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g4a" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0e2040" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#050110" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="260" height="260" fill="#050110" rx="8"/>
+  <circle cx="130" cy="130" r="118" fill="url(#g4a)"/>
+
+  <!-- outer diamond -->
+  <polygon points="130,22 238,130 130,238 22,130"
+    fill="rgba(255,255,255,.05)" stroke="white" stroke-width="1.8"/>
+
+  <!-- middle diamond -->
+  <polygon points="130,62 198,130 130,198 62,130"
+    fill="rgba(255,215,0,.1)" stroke="#FFD700" stroke-width="2"/>
+
+  <!-- inner diamond -->
+  <polygon points="130,96 164,130 130,164 96,130"
+    fill="rgba(255,140,0,.16)" stroke="#FF8C00" stroke-width="2.2"/>
+
+  <!-- connecting spokes outer→middle -->
+  <line x1="130" y1="22"  x2="130" y2="62"  stroke="rgba(255,255,255,.4)" stroke-width="1.2"/>
+  <line x1="238" y1="130" x2="198" y2="130" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/>
+  <line x1="130" y1="238" x2="130" y2="198" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/>
+  <line x1="22"  y1="130" x2="62"  y2="130" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/>
+
+  <!-- connecting spokes middle→inner -->
+  <line x1="130" y1="62"  x2="130" y2="96"  stroke="rgba(255,215,0,.5)" stroke-width="1"/>
+  <line x1="198" y1="130" x2="164" y2="130" stroke="rgba(255,215,0,.5)" stroke-width="1"/>
+  <line x1="130" y1="198" x2="130" y2="164" stroke="rgba(255,215,0,.5)" stroke-width="1"/>
+  <line x1="62"  y1="130" x2="96"  y2="130" stroke="rgba(255,215,0,.5)" stroke-width="1"/>
+
+  <!-- faint guide cross -->
+  <line x1="130" y1="22" x2="130" y2="238"
+    stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="3 6"/>
+  <line x1="22" y1="130" x2="238" y2="130"
+    stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="3 6"/>
+
+  <!-- diagonal accents at inner corners -->
+  <line x1="96" y1="130" x2="62" y2="130" stroke="transparent"/>
+  <circle cx="97"  cy="97"  r="2.5" fill="#FF8C00" opacity=".5"/>
+  <circle cx="163" cy="97"  r="2.5" fill="#FF8C00" opacity=".5"/>
+  <circle cx="163" cy="163" r="2.5" fill="#FF8C00" opacity=".5"/>
+  <circle cx="97"  cy="163" r="2.5" fill="#FF8C00" opacity=".5"/>
+
+  <!-- center -->
+  <circle cx="130" cy="130" r="10" fill="rgba(255,215,0,.2)" stroke="#FFD700" stroke-width="1.5"/>
+  <circle cx="130" cy="130" r="5"  fill="#FFD700"/>
+
+  <!-- outer diamond tip dots (white) -->
+  <circle cx="130" cy="22"  r="5" fill="white" opacity=".85"/>
+  <circle cx="238" cy="130" r="5" fill="white" opacity=".85"/>
+  <circle cx="130" cy="238" r="5" fill="white" opacity=".85"/>
+  <circle cx="22"  cy="130" r="5" fill="white" opacity=".85"/>
+
+  <!-- middle diamond tip dots (gold) -->
+  <circle cx="130" cy="62"  r="4" fill="#FFD700" opacity=".85"/>
+  <circle cx="198" cy="130" r="4" fill="#FFD700" opacity=".85"/>
+  <circle cx="130" cy="198" r="4" fill="#FFD700" opacity=".85"/>
+  <circle cx="62"  cy="130" r="4" fill="#FFD700" opacity=".85"/>
+</svg>`,
+    steps: [
+      { text: 'Draw a large diamond outline — four equal sides with points facing N, S, E, W. This outer diamond sets the boundary of your kolam.' },
+      { text: 'Inside the first diamond, draw a medium-sized diamond centred in exactly the same way.' },
+      { text: 'Inside the medium diamond, draw a small inner diamond. All three should share the same centre point.' },
+      { text: 'Connect the matching tips of adjacent diamonds with short straight lines — North tip of outer to North tip of middle, and so on.',
+        tip: 'These "spokes" give the pattern its beautiful layered depth.' },
+      { text: 'Place small dots at each of the outer diamond\'s four tips (white), and at the middle diamond\'s tips (gold).' },
+      { text: 'Draw a tiny circle at the very centre and fill it with a bright dot. Optionally add faint dotted guide lines through the centre cross.' },
+    ],
+  },
+
+  /* ── 5 · 8-Petal Lotus ── */
+  {
+    title: 'Full Lotus Kolam',
+    tamil: 'பூரண தாமரை கோலம்',
+    difficulty: 'Advanced',
+    description: 'The majestic 8-petal lotus combines large cardinal petals and smaller diagonal petals with multiple ornamental rings. A cherished kolam for special occasions and temple floors.',
+    svg: `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g5a" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2a0e60" stop-opacity=".8"/>
+      <stop offset="100%" stop-color="#050110" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g5b" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,215,0,.2)"/>
+      <stop offset="100%" stop-color="rgba(255,140,0,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="260" height="260" fill="#050110" rx="8"/>
+  <circle cx="130" cy="130" r="118" fill="url(#g5a)"/>
+
+  <!-- outer decorative ring -->
+  <circle cx="130" cy="130" r="113"
+    fill="none" stroke="rgba(255,215,0,.15)" stroke-width="1"
+    stroke-dasharray="5 9"/>
+
+  <!-- 4 large cardinal petals (gold) -->
+  <ellipse cx="130" cy="70" rx="21" ry="58"
+    fill="rgba(255,215,0,.16)" stroke="#FFD700" stroke-width="2"
+    transform="rotate(0,130,130)"/>
+  <ellipse cx="130" cy="70" rx="21" ry="58"
+    fill="rgba(255,215,0,.16)" stroke="#FFD700" stroke-width="2"
+    transform="rotate(90,130,130)"/>
+  <ellipse cx="130" cy="70" rx="21" ry="58"
+    fill="rgba(255,215,0,.16)" stroke="#FFD700" stroke-width="2"
+    transform="rotate(180,130,130)"/>
+  <ellipse cx="130" cy="70" rx="21" ry="58"
+    fill="rgba(255,215,0,.16)" stroke="#FFD700" stroke-width="2"
+    transform="rotate(270,130,130)"/>
+
+  <!-- 4 smaller diagonal petals (orange) -->
+  <ellipse cx="130" cy="80" rx="15" ry="48"
+    fill="rgba(255,140,0,.16)" stroke="#FF8C00" stroke-width="1.6"
+    transform="rotate(45,130,130)"/>
+  <ellipse cx="130" cy="80" rx="15" ry="48"
+    fill="rgba(255,140,0,.16)" stroke="#FF8C00" stroke-width="1.6"
+    transform="rotate(135,130,130)"/>
+  <ellipse cx="130" cy="80" rx="15" ry="48"
+    fill="rgba(255,140,0,.16)" stroke="#FF8C00" stroke-width="1.6"
+    transform="rotate(225,130,130)"/>
+  <ellipse cx="130" cy="80" rx="15" ry="48"
+    fill="rgba(255,140,0,.16)" stroke="#FF8C00" stroke-width="1.6"
+    transform="rotate(315,130,130)"/>
+
+  <!-- outer ring -->
+  <circle cx="130" cy="130" r="42"
+    fill="url(#g5b)" stroke="#E8365D" stroke-width="1.8"/>
+
+  <!-- mid ring -->
+  <circle cx="130" cy="130" r="26"
+    fill="rgba(255,215,0,.15)" stroke="#FFD700" stroke-width="1.8"/>
+
+  <!-- inner ring -->
+  <circle cx="130" cy="130" r="13"
+    fill="rgba(255,140,0,.25)" stroke="#FF8C00" stroke-width="1.5"/>
+
+  <!-- centre dot -->
+  <circle cx="130" cy="130" r="6" fill="#FFD700"/>
+
+  <!-- Cardinal petal tips (white)
+       cy=70, ry=58 → tip at cy−ry = 12 → dist from centre = 130−12 = 118
+       0°: (130,12)  90°:(248,130)  180°:(130,248)  270°:(12,130) -->
+  <circle cx="130" cy="12"  r="4.5" fill="white" opacity=".85"/>
+  <circle cx="248" cy="130" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="130" cy="248" r="4.5" fill="white" opacity=".85"/>
+  <circle cx="12"  cy="130" r="4.5" fill="white" opacity=".85"/>
+
+  <!-- Diagonal petal tips (orange)
+       cy=80, ry=48 → tip at 80−48=32 → dist = 130−32 = 98
+       45°: (130+98·sin45, 130−98·cos45) = (130+69.3, 130−69.3) = (199.3, 60.7)
+       135°: (199.3, 199.3)  225°: (60.7, 199.3)  315°: (60.7, 60.7) -->
+  <circle cx="199.3" cy="60.7"  r="3.8" fill="#FF8C00" opacity=".9"/>
+  <circle cx="199.3" cy="199.3" r="3.8" fill="#FF8C00" opacity=".9"/>
+  <circle cx="60.7"  cy="199.3" r="3.8" fill="#FF8C00" opacity=".9"/>
+  <circle cx="60.7"  cy="60.7"  r="3.8" fill="#FF8C00" opacity=".9"/>
+
+  <!-- subtle axis guides -->
+  <line x1="130" y1="12"  x2="130" y2="248" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+  <line x1="12"  y1="130" x2="248" y2="130" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+</svg>`,
+    steps: [
+      { text: 'Draw the three centre rings first: a small inner circle, a medium ring, and a larger outer ring — all sharing the same centre point.',
+        tip: 'A coin or bottle cap makes a good guide for the inner circle.' },
+      { text: 'From the centre, draw 4 large petals pointing N, S, E, W — each is a tall, narrow oval that starts at the outer ring and reaches far outward.' },
+      { text: 'Draw 4 smaller diagonal petals — pointing NE, SE, SW, NW — slightly shorter and narrower than the cardinal ones.' },
+      { text: 'Make sure all 8 petals touch the outer ring and do not overlap each other at their tips.' },
+      { text: 'Place white dots at the tips of the 4 cardinal petals (N, S, E, W), and orange dots at the tips of the 4 diagonal petals.' },
+      { text: 'Add a bright gold dot at the very centre. Finish with a faint dotted decorative circle around the whole pattern and fine cross-lines through the centre.',
+        tip: 'You can fill petals with rice flour or natural colours like turmeric (yellow) and vermilion (red).' },
+    ],
+  },
+
+];
+
+/* ═════════════════════════════
+   App logic
+═════════════════════════════ */
+let current = 0;
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= kolams.length) return;
+
+  const card = document.getElementById('mainCard');
+  card.classList.add('fade-out');
+  setTimeout(() => {
+    current = next;
+    render();
+    card.classList.remove('fade-out');
+    card.classList.add('fade-in');
+    setTimeout(() => card.classList.remove('fade-in'), 400);
+  }, 200);
+}
+
+function render() {
+  const k = kolams[current];
+
+  /* header */
+  document.getElementById('kolamHeader').innerHTML = `
+    <div class="badge">KOLAM ${current + 1} OF ${kolams.length} &nbsp;·&nbsp; ${k.difficulty}</div>
+    <div class="kolam-name-ta">${k.tamil}</div>
+    <div class="kolam-name-en">${k.title}</div>
+    <div class="kolam-desc">${k.description}</div>
+  `;
+
+  /* SVG */
+  document.getElementById('kolamSvg').innerHTML = k.svg;
+
+  /* steps */
+  document.getElementById('stepsList').innerHTML = k.steps.map((s, i) => `
+    <li class="step">
+      <div class="step-num">${i + 1}</div>
+      <div class="step-body">
+        <div class="step-text">${s.text}</div>
+        ${s.tip ? `<div class="step-tip">💡 ${s.tip}</div>` : ''}
+      </div>
+    </li>
+  `).join('');
+
+  /* nav buttons */
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === kolams.length - 1;
+  document.getElementById('pageNum').textContent = `${current + 1} / ${kolams.length}`;
+
+  /* difficulty pips */
+  const levels = { Beginner: 1, Intermediate: 2, Advanced: 3 };
+  const lvl = levels[k.difficulty] || 1;
+  document.getElementById('diffRow').innerHTML =
+    `<span class="diff-label">${k.difficulty}</span>` +
+    [1, 2, 3].map(i => `<div class="diff-pip${i <= lvl ? ' on' : ''}"></div>`).join('');
+
+  /* progress dots */
+  document.querySelectorAll('.pdot').forEach((d, i) =>
+    d.classList.toggle('active', i === current));
+}
+
+/* build progress dots */
+const row = document.getElementById('progressRow');
+kolams.forEach((_, i) => {
+  const b = document.createElement('button');
+  b.className = 'pdot' + (i === 0 ? ' active' : '');
+  b.title = kolams[i].title;
+  b.setAttribute('aria-label', `Go to kolam ${i + 1}: ${kolams[i].title}`);
+  b.onclick = () => { if (current !== i) { current = i; render(); } };
+  row.appendChild(b);
+});
+
+/* keyboard navigation */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+});
+
+render();
+</script>
+</body>
+</html>
