@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>புள்ளி கோலம் – Pulli Kolam</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #09011c;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, serif;
+    padding: 16px;
+  }
+
+  h1 {
+    color: #FFD700;
+    font-size: clamp(1.4em, 5vw, 2.2em);
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 24px rgba(255,215,0,.5);
+  }
+
+  .counter {
+    color: rgba(255,215,0,0.55);
+    font-size: 0.9em;
+    margin-bottom: 14px;
+    letter-spacing: 2px;
+  }
+
+  .video-wrapper {
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 16/9;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid rgba(255,215,0,0.25);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+  }
+
+  .video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .nav {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+  }
+
+  .nav button {
+    background: linear-gradient(135deg, #FF8C00, #FFD700);
+    color: #09011c;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 48px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 18px rgba(255,140,0,0.4);
+  }
+
+  .nav button:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 24px rgba(255,215,0,0.5);
+  }
+
+  .nav button:active {
+    transform: scale(0.97);
+  }
+
+  .nav button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .dots {
+    display: flex;
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255,215,0,0.3);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .dot.active {
+    background: #FFD700;
+    box-shadow: 0 0 8px rgba(255,215,0,0.8);
+    transform: scale(1.3);
+  }
+</style>
+</head>
+<body>
+
+<h1>புள்ளி கோலம்</h1>
+<div class="counter" id="counter">1 / 10</div>
+
+<div class="video-wrapper">
+  <iframe
+    id="player"
+    src="https://www.youtube.com/embed/-4teYApuj04?autoplay=1&rel=0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<div class="nav">
+  <button id="prevBtn" onclick="go(-1)" disabled>&#9664; முந்தைய</button>
+  <button id="nextBtn" onclick="go(1)">அடுத்த &#9654;</button>
+</div>
+
+<div class="dots" id="dots"></div>
+
+<script>
+  const videos = [
+    "-4teYApuj04",
+    "hWDNjqXyDZw",
+    "3sGG0YX-DZ0",
+    "-snARniNN2g",
+    "b6nsbaJ4aWs",
+    "Zm0pLBJ-LBQ",
+    "AR2FvVhz8b0",
+    "4tP1orhCb-A",
+    "JV7cMwlxb0c",
+    "8hE5ziTgzZg"
+  ];
+
+  let current = 0;
+  const player  = document.getElementById("player");
+  const counter = document.getElementById("counter");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const dotsEl  = document.getElementById("dots");
+
+  // Build dots
+  videos.forEach((_, i) => {
+    const d = document.createElement("button");
+    d.className = "dot" + (i === 0 ? " active" : "");
+    d.setAttribute("aria-label", "Kolam " + (i + 1));
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(index) {
+    current = index;
+    player.src = "https://www.youtube.com/embed/" + videos[current] + "?autoplay=1&rel=0";
+    counter.textContent = (current + 1) + " / " + videos.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === videos.length - 1;
+    document.querySelectorAll(".dot").forEach((d, i) => {
+      d.classList.toggle("active", i === current);
+    });
+  }
+
+  function go(dir) {
+    goTo(current + dir);
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" && current < videos.length - 1) go(1);
+    if (e.key === "ArrowLeft"  && current > 0) go(-1);
+  });
+</script>
+</body>
+</html>
